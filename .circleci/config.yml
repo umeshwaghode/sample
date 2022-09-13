@@ -1,47 +1,26 @@
+# Use the latest 2.1 version of CircleCI pipeline process engine.
+# See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-executors:
-  docker:
-    docker:
-      - image: circleci/golang:1.16.12
-
-commands: # a reusable command with parameters
-  create-github-release:
-    description: Create Github Release or Pre-Release
-    parameters:
-      ghr-option:
-        default: ""
-        type: string
-    steps:
-      - run: |
-          go get github.com/cxflowtestuser/ghr
-          VERSION=$(cat ./build/libs/version.txt)
-          rm ./build/libs/version.txt
-          mv build/libs/java11/repo-${VERSION}.jar build/libs/cx-flow-${VERSION}-java11.jar
-          ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -n ${VERSION} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} << parameters.ghr-option >> -delete ${VERSION} ./build/libs/
+# Define a job to be invoked later in a workflow.
+# See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
-  publish-github-pre-release:
+  say-hello:
+    # Specify the execution environment. You can specify an image from Dockerhub or use one of our Convenience Images from CircleCI's Developer Hub.
+    # See: https://circleci.com/docs/2.0/configuration-reference/#docker-machine-macos-windows-executor
     docker:
-      - image: circleci/golang:1.9
+      - image: cimg/base:stable
+    # Add steps to the job
+    # See: https://circleci.com/docs/2.0/configuration-reference/#steps
     steps:
-      - attach_workspace:
-          at: .
-      - create-github-release:
-          ghr-option: "-prerelease "
+      - checkout
+      - run:
+          name: "Say hello"
+          command: "echo Hello, World!"
 
-orbs:
-  checkmarx: checkmarx/circleci-kpi-shipper@0.10.0
-
+# Invoke jobs via workflows
+# See: https://circleci.com/docs/2.0/configuration-reference/#workflows
 workflows:
-  version: 2
-
-  cx-kpi-shipper:
+  say-hello-workflow:
     jobs:
-      - checkmarx/circleci-kpi-shipper
-
-  build_deploy:
-    jobs:
-      - publish-github-pre-release:
-          filters:
-            branches:
-              only: main
+      - say-hello
