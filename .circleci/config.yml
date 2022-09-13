@@ -22,7 +22,7 @@ commands: # a reusable command with parameters
 jobs:
   publish-github-pre-release:
     docker:
-      - image: circleci/golang:1.9
+      - image: circleci/golang:1.16.12
     steps:
       - attach_workspace:
           at: .
