@@ -32,10 +32,6 @@ jobs:
 workflows:
   version: 2
 
-  cx-kpi-shipper:
-    jobs:
-      - checkmarx/circleci-kpi-shipper
-
   build_deploy:
     jobs:
       - publish-github-pre-release:
